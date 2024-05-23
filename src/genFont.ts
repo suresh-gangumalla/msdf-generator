@@ -2,6 +2,7 @@ import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
+import { fileURLToPath } from 'url';
 
 let fontSrcDir: string = '';
 let fontDstDir: string = '';
@@ -17,8 +18,8 @@ let charsetPath = '';
 export function setGeneratePaths(srcDir: string, dstDir: string) {
   fontSrcDir = srcDir;
   fontDstDir = dstDir;
-  overridesPath = path.join(fontSrcDir, 'overrides.json');
-  charsetPath = path.join(fontSrcDir, 'charset.txt');
+  overridesPath = srcDir === 'font-src' ? path.join(fontSrcDir, 'overrides.json'):  path.join(fileURLToPath(import.meta.url), "../../font-src-sample/overrides.json");
+  charsetPath = srcDir === 'font-src' ? path.join(fontSrcDir, 'charset.txt') :  path.join(fileURLToPath(import.meta.url), "../../font-src-sample/charset.txt");
 }
 
 export interface SdfFontInfo {
@@ -36,16 +37,16 @@ export interface SdfFontInfo {
  * @param fieldType - The type of the font field (msdf or ssdf).
  * @returns {Promise<void>} - A promise that resolves when the font generation is complete.
  */
-export async function genFont(fontFileName: string, fieldType: 'ssdf' | 'msdf'): Promise<SdfFontInfo> {
+export async function genFont(fontFileName: string, fieldType: 'ssdf' | 'msdf'): Promise<SdfFontInfo | null> {
   console.log(chalk.blue(`Generating ${fieldType} font from ${chalk.bold(fontFileName)}...`));
   if (fieldType !== 'msdf' && fieldType !== 'ssdf') {
     console.log(`Invalid field type ${fieldType}`);
-    process.exit(1);
+    return null
   }
   const fontPath = path.join(fontSrcDir, fontFileName);
   if (!fs.existsSync(fontPath)) {
     console.log(`Font ${fontFileName} does not exist`);
-    process.exit(1);
+    return null
   }
 
   let bmfont_field_type: string = fieldType;

@@ -2,8 +2,10 @@
   "name": "msdf-generator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "type": "module",
+  "exports": {
+    ".": "./dist/generateSDF.js"
+  },
   "scripts": {
     "start": "tsc && node dist/index.js",
     "generate": "pnpm run start",
