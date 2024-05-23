@@ -2,7 +2,6 @@ import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
-import { fileURLToPath } from 'url';
 
 let fontSrcDir: string = '';
 let fontDstDir: string = '';
