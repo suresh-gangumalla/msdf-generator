@@ -18,8 +18,8 @@ let charsetPath = '';
 export function setGeneratePaths(srcDir: string, dstDir: string) {
   fontSrcDir = srcDir;
   fontDstDir = dstDir;
-  overridesPath = srcDir === 'font-src' ? path.join(fontSrcDir, 'overrides.json'):  path.join(fileURLToPath(import.meta.url), "../../font-src-sample/overrides.json");
-  charsetPath = srcDir === 'font-src' ? path.join(fontSrcDir, 'charset.txt') :  path.join(fileURLToPath(import.meta.url), "../../font-src-sample/charset.txt");
+  overridesPath = path.join(fontSrcDir, 'overrides.json')
+  charsetPath = path.join(fontSrcDir, 'charset.txt')
 }
 
 export interface SdfFontInfo {
@@ -55,7 +55,7 @@ export async function genFont(fontFileName: string, fieldType: 'ssdf' | 'msdf'):
   }
 
   const fontNameNoExt = fontFileName.split('.')[0]!;
-  const overrides = JSON.parse(fs.readFileSync(overridesPath, 'utf8'));
+  const overrides = fs.existsSync(overridesPath) ? JSON.parse(fs.readFileSync(overridesPath, 'utf8')): {};
   const font_size = overrides[fontNameNoExt]?.[fieldType]?.fontSize || 42;
   const distance_range =
     overrides[fontNameNoExt]?.[fieldType]?.distanceRange || 4;
@@ -73,8 +73,7 @@ export async function genFont(fontFileName: string, fieldType: 'ssdf' | 'msdf'):
     `${font_size}`,
     '--distance-range',
     `${distance_range}`,
-    '--charset-file',
-    charsetPath,
+    ...(fs.existsSync(charsetPath) ? ['--charset-file', charsetPath] : []),
     fontPath,
   ]);
 
