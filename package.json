@@ -4,7 +4,8 @@
   "description": "",
   "type": "module",
   "exports": {
-    ".": "./dist/generateSDF.js"
+    ".": "./dist/genFont.js",
+    "./adjustFont": "./dist/adjustFont.js"
   },
   "scripts": {
     "start": "tsc && node dist/index.js",
