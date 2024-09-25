@@ -30,12 +30,13 @@ let charsetPath = '';
  *
  * @param srcDir
  * @param dstDir
+ * @param charsetFilePath
  */
-export function setGeneratePaths(srcDir: string, dstDir: string) {
+export function setGeneratePaths(srcDir: string, dstDir: string, charsetFilePath?: string ) {
   fontSrcDir = srcDir;
   fontDstDir = dstDir;
   overridesPath = path.join(fontSrcDir, 'overrides.json');
-  charsetPath = path.join(fontSrcDir, 'charset.txt');
+  charsetPath = charsetFilePath ? charsetFilePath : path.join(fontSrcDir, 'charset.txt');
 }
 
 export interface SdfFontInfo {
