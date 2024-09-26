@@ -18,12 +18,19 @@
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
+import { fileURLToPath } from 'url'
 import generateBMFont from 'msdf-bmfont-xml';
 
 let fontSrcDir: string = '';
 let fontDstDir: string = '';
 let overridesPath = '';
 let charsetPath = '';
+
+interface PresetsData {
+  [key : string]: string | undefined
+}
+
+let presets: PresetsData
 
 /**
  * Set the paths for the font source and destination directories.
@@ -36,7 +43,8 @@ export function setGeneratePaths(srcDir: string, dstDir: string, charsetFilePath
   fontSrcDir = srcDir;
   fontDstDir = dstDir;
   overridesPath = path.join(fontSrcDir, 'overrides.json');
-  charsetPath = charsetFilePath ? charsetFilePath : path.join(fontSrcDir, 'charset.txt');
+  charsetPath = charsetFilePath ? charsetFilePath : path.join(fontSrcDir, 'charset.config.json');
+  presets = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'presets.json'), 'utf8'))
 }
 
 export interface SdfFontInfo {
@@ -57,6 +65,11 @@ type FontOptions = {
   fontSize: number;
   distanceRange: number;
   charset?: string;
+}
+
+interface CharsetConfig{
+  charset: string,
+  presets: string[]
 }
 
 /**
@@ -99,7 +112,20 @@ export async function genFont(fontFileName: string, fieldType: 'ssdf' | 'msdf'):
   }
 
   if (fs.existsSync(charsetPath)) {
-    options['charset'] = fs.readFileSync(charsetPath, 'utf8')
+    const config:CharsetConfig =  JSON.parse(fs.readFileSync(charsetPath, 'utf8'))
+    let charset = config.charset
+    const presetsToApply = config.presets
+    if (presetsToApply.length > 0) {
+      for (let i = 0; i < presetsToApply.length; i++ ){
+        const key = presetsToApply[i]
+        if (key && key in presets)  {
+          charset += presets[key]
+        } else {
+          console.warn(`preset, '${key}' is not available in msdf-generator presets`)
+        }
+      }
+    }
+    options['charset'] = charset
   }
 
   await generateFont(fontPath, fontDstDir, fontNameNoExt, fieldType, options)

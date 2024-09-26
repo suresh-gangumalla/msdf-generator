@@ -22,6 +22,7 @@
   },
   "include": [
     "src/**/*",
-    "types/**/*"
+    "types/**/*",
+    "src/presets.json"
   ]
 }
