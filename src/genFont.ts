@@ -115,14 +115,12 @@ export async function genFont(fontFileName: string, fieldType: 'ssdf' | 'msdf'):
     const config:CharsetConfig =  JSON.parse(fs.readFileSync(charsetPath, 'utf8'))
     let charset = config.charset
     const presetsToApply = config.presets
-    if (presetsToApply.length > 0) {
-      for (let i = 0; i < presetsToApply.length; i++ ){
-        const key = presetsToApply[i]
-        if (key && key in presets)  {
-          charset += presets[key]
-        } else {
-          console.warn(`preset, '${key}' is not available in msdf-generator presets`)
-        }
+    for (let i = 0; i < presetsToApply.length; i++ ){
+      const key = presetsToApply[i]
+      if (key && key in presets)  {
+        charset += presets[key]
+      } else {
+        console.warn(`preset, '${key}' is not available in msdf-generator presets`)
       }
     }
     options['charset'] = charset
