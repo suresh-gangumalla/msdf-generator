@@ -114,7 +114,7 @@ export async function genFont(fontFileName: string, fieldType: 'ssdf' | 'msdf'):
   if (fs.existsSync(charsetPath)) {
     const config:CharsetConfig =  JSON.parse(fs.readFileSync(charsetPath, 'utf8'))
     let charset = config.charset
-    const presetsToApply = config.presets
+    const presetsToApply = config.presets ? config.presets : []
     for (let i = 0; i < presetsToApply.length; i++ ){
       const key = presetsToApply[i]
       if (key && key in presets)  {
